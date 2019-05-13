@@ -12,7 +12,8 @@ IMG_NAME=py_normal_prog_corrector
 docker build -t ${IMG_NAME} .
 
 
-SOL_FILE=${EX}/${EX}${ERROR_SUFFIX}.py
+SOL_FILE_NAME=${EX}${ERROR_SUFFIX}
+SOL_FILE=${EX}/${SOL_FILE_NAME}.py
 if [[ ! -f ${SOL_FILE} ]]; then
     echo "The solution file ${SOL_FILE} does not exist!"
     exit 1
@@ -24,9 +25,11 @@ if [[ ! -f ${TEST_FILE} ]]; then
     exit 2
 fi
 
-RES_FILE=results/${EX}_result
+RES_FILE=results/${SOL_FILE_NAME}_result
 if [[ ! -f ${RES_FILE} ]]; then
-    mkdir results
+    if [[ ! -d results ]]; then
+        mkdir results
+    fi
     touch ${RES_FILE}
 else
     > ${RES_FILE}
@@ -36,4 +39,4 @@ fi
 docker run -it --rm \
     -v $(pwd)/${SOL_FILE}:/data/${EX}.py \
     -v $(pwd)/${TEST_FILE}:/data/${EX}_test.py \
-    ${IMG_NAME}
+    ${IMG_NAME} > ${RES_FILE}
