@@ -1,0 +1,6 @@
+.idea/*
+!.idea/jsonSchemas.xml
+
+results/
+
+__pycache__/
