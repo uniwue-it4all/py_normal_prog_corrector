@@ -2,15 +2,18 @@
 
 EX=${1:?"Error: exercise name / folder is not defined!"}
 
+if [[ ${EX} == */ ]]; then
+    EX=${EX::-1}
+fi
+
 ERROR_SUFFIX=${2:-""}
 
 SOL_FILE=${EX}/${EX}.py
 
-IMG_NAME=py_normal_prog_corrector
+IMG_NAME=beyselein/py_normal_prog_corrector
 
-
-docker build -t ${IMG_NAME} .
-
+# Build image
+#docker build -t ${IMG_NAME} .
 
 SOL_FILE_NAME=${EX}${ERROR_SUFFIX}
 SOL_FILE=${EX}/${SOL_FILE_NAME}.py

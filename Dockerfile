@@ -1,7 +1,5 @@
-FROM python:3-alpine
+FROM beyselein/py_correction_base_image
 
-ARG WORKDIR=/data
+COPY entrypoint.sh /data/
 
-WORKDIR $WORKDIR
-
-ENTRYPOINT timeout -t 2 -s KILL python -m unittest discover -p "*_test.py"
+ENTRYPOINT ["./entrypoint.sh"]
