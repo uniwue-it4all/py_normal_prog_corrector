@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
 
+IMG_NAME=beyselein/py_normal_prog_corrector
+
 EX=${1:?"Error: exercise name / folder is not defined!"}
 
+# remove trailing slash from 'exercise' (folder!)
 if [[ ${EX} == */ ]]; then
     EX=${EX::-1}
 fi
 
 ERROR_SUFFIX=${2:-""}
 
-SOL_FILE=${EX}/${EX}.py
-
-IMG_NAME=beyselein/py_normal_prog_corrector
-
 # Build image
-#docker build -t ${IMG_NAME} .
+docker build -t ${IMG_NAME} .
 
 SOL_FILE_NAME=${EX}${ERROR_SUFFIX}
 SOL_FILE=${EX}/${SOL_FILE_NAME}.py
@@ -28,18 +27,29 @@ if [[ ! -f ${TEST_FILE} ]]; then
     exit 2
 fi
 
+FILES_TO_LINT_FILE=${EX}/lints.txt
+
 RES_FILE=results/${SOL_FILE_NAME}_result
 if [[ ! -f ${RES_FILE} ]]; then
-    if [[ ! -d results ]]; then
-        mkdir results
-    fi
+    mkdir -p results
     touch ${RES_FILE}
 else
     > ${RES_FILE}
 fi
 
 
+LINT_RESULTS_FILE=results/${EX}_lints.json
+if [[ ! -d ${LINT_RESULTS_FILE}} ]]; then
+    # create lint results file if not exists
+    touch ${LINT_RESULTS_FILE}
+else
+    # clear lint results file
+    > ${LINT_RESULTS_FILE}
+fi
+
 docker run -it --rm \
     -v $(pwd)/${SOL_FILE}:/data/${EX}.py \
     -v $(pwd)/${TEST_FILE}:/data/${EX}_test.py \
+    -v $(pwd)/${FILES_TO_LINT_FILE}:/data/files_to_lint.txt \
+    -v $(pwd)/${LINT_RESULTS_FILE}:/data/lint_results.json \
     ${IMG_NAME} > ${RES_FILE}
